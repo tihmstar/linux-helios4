@@ -4,12 +4,12 @@
 buildarch=4
 
 pkgbase=linux-helios4
-_srcname=linux-5.3
+_srcname=linux-5.4
 _kernelname=${pkgbase#linux}
 _desc="ARMv7 Helios4"
-pkgver=5.3.1
+pkgver=5.4.0
 pkgrel=1
-rcnver=5.3.0
+rcnver=5.4.0
 rcnrel=armv7-x8
 arch=('armv7h')
 url="http://www.kernel.org/"
@@ -17,7 +17,7 @@ license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'git' 'uboot-tools' 'vboot-utils' 'dtc')
 options=('!strip')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
-        "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
+        #"http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
         "http://rcn-ee.com/deb/sid-armhf/v${rcnver}-${rcnrel}/patch-${rcnver%.0}-${rcnrel}.diff.gz"
         '0001-ARM-atags-add-support-for-Marvell-s-u-boot.patch'
         '0002-ARM-atags-fdt-retrieve-MAC-addresses-from-Marvell-bo.patch'
@@ -34,30 +34,30 @@ source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         '90-linux.hook'
         '92-mvebu-gpio-remove-hardcoded-timer-assignment.patch')
 
-md5sums=('c99feaade8047339528fb066ec5f8a49'
-         '476673d3ab1470fd9bac0da60774f3fd'
-         '9c61370104816184d2b4e1b59163532c'
-         'f989c450907a0af28867b38dc0a1112e'
-         '884c3ef691a300cd2b0c704d795130c3'
-         'd9ab3a3d50a3684b6f13c5c1c8c23dbe'
-         '65449dc8fa2b45522135899c5e8acaed'
-         'c5a2831b832c726ba65077b69a8bc8e7'
-         '196a7cb2a570808dabfd22066646dbab'
-         '118d67de1d31194435b5564c36b0c57f'
-         '7334902800f72a0d17c26bef373d2c49'
-         '065e0eb93091edeea111c1c1f6e8fb44'
-         '98eb2eada163f86923622b9fdc260779'
+
+md5sums=('ce9b2d974d27408a61c53a30d3f98fb9'
+         '8906e5bfc7fab33d4db3584c3816282e'
+         '8741125da5769dec5e2e677e79921873'
+         'c73bd92dfb373cfe747b37388ab79215'
+         'e25db57fa5c4068a4f488d8e60fcf952'
+         '1d740e2ebda8f1cfe3f7f6ac3ec87d8d'
+         'f33ddfc782a5efbad6a6a1f8e11328ed'
+         'a30ab4aecf7d39a5643f390ccda3c6d3'
+         '5ab56d2bf2422714f82e586d1440a835'
+         '20ce2ab46d910316fe00e70ddfb06130'
+         'b209fbb5ea8c5eecb9afa7b77c450f7f'
+         '38953deeb5f01372bb6b6ed14d8660a9'
          '86d4a35722b5410e3b29fc92dae15d4b'
          'ce6c81ad1ad1f8b333fd6077d47abdaf'
          '3e2a512f8da5db5fe9f17875405e56a3'
-	 '8ab2c7698b2f38042f8c0c71f16f07fd')
+         'c11b3fd3bcf1fa7e94b3afb574ab4be0')
 
 
 prepare() {
   cd "${srcdir}/${_srcname}"
 
   # add upstream patch
-  git apply --whitespace=nowarn ../patch-${pkgver}
+  #git apply --whitespace=nowarn ../patch-${pkgver}
 
   # RCN patch
   git apply ../patch-${rcnver%.0}-${rcnrel}.diff
@@ -73,6 +73,7 @@ prepare() {
   git apply ../0008-ARM-dove-enable-ethernet-on-D3Plug.patch
   git apply ../0009-USB-Armory-MkII-support.patch
   patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment.patch
+
 
   cat "${srcdir}/config" > ./.config
 
@@ -243,7 +244,6 @@ _package-headers() {
     /usr/bin/strip ${_strip} "${_binary}"
   done < <(find "${_builddir}/scripts" -type f -perm -u+w -print0 2>/dev/null)
 }
-
 
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 for _p in ${pkgname[@]}; do

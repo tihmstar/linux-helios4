@@ -1,5 +1,5 @@
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 869d47f..82668d4 100644
+index 6c06876..ba9cb16 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
 @@ -93,20 +93,41 @@
@@ -211,11 +211,11 @@ index 869d47f..82668d4 100644
  }
  
  static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   struct pwm_state *state)
+ 			   const struct pwm_state *state)
  {
  	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
-+	struct mvebu_pwm_chip_drv *chip_data = (struct mvebu_pwm_chip_drv*) pwm->chip_data;
-+	struct mvebu_pwmchip *controller = mvebu_pwm_list[chip_data->ctrl];
++        struct mvebu_pwm_chip_drv *chip_data = (struct mvebu_pwm_chip_drv*) pwm->chip_data;
++        struct mvebu_pwmchip *controller = mvebu_pwm_list[chip_data->ctrl];
  	struct mvebu_gpio_chip *mvchip = mvpwm->mvchip;
  	unsigned long long val;
  	unsigned long flags;
