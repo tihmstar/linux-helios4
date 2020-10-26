@@ -1,4 +1,4 @@
-From cb931641740269a78b002b438904292a1110a5a7 Mon Sep 17 00:00:00 2001
+From 054eae658707524b6b17a726d5ca59f38e436bea Mon Sep 17 00:00:00 2001
 From: Willy Tarreau <w@xxxxxx>
 Date: Sun, 2 Dec 2012 19:56:58 +0100
 Subject: [PATCH 2/9] ARM: atags/fdt: retrieve MAC addresses from Marvell boot
@@ -13,23 +13,14 @@ address set.
 
 Signed-off-by: Willy Tarreau <w@xxxxxx>
 ---
- arch/arm/boot/compressed/atags_to_fdt.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/arm/boot/compressed/atags_to_fdt.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/arch/arm/boot/compressed/atags_to_fdt.c b/arch/arm/boot/compressed/atags_to_fdt.c
-index 330cd3c2eae5..82f3802ff695 100644
+index 8452753efebe..3393a10741bb 100644
 --- a/arch/arm/boot/compressed/atags_to_fdt.c
 +++ b/arch/arm/boot/compressed/atags_to_fdt.c
-@@ -19,7 +19,7 @@ static int node_offset(void *fdt, const char *node_path)
- }
- 
- static int setprop(void *fdt, const char *node_path, const char *property,
--		   uint32_t *val_array, int size)
-+		   void *val_array, int size)
- {
- 	int offset = node_offset(fdt, node_path);
- 	if (offset < 0)
-@@ -203,6 +203,12 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
+@@ -204,6 +204,12 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
  			hex_str(serno, atag->u.serialnr.high);
  			hex_str(serno+8, atag->u.serialnr.low);
  			setprop_string(fdt, "/", "serial-number", serno);
@@ -43,5 +34,5 @@ index 330cd3c2eae5..82f3802ff695 100644
  	}
  
 -- 
-2.23.0
+2.27.0
 

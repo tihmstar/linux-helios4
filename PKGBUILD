@@ -4,21 +4,21 @@
 buildarch=4
 
 pkgbase=linux-helios4
-_srcname=linux-5.4
+_srcname=linux-5.8
 _kernelname=${pkgbase#linux}
 _desc="ARMv7 Helios4"
-pkgver=5.4.0
+pkgver=5.8.9
 pkgrel=1
-rcnver=5.4.0
-rcnrel=armv7-x8
+rcnver=5.8.5
+rcnrel=armv7-x11
 arch=('armv7h')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'git' 'uboot-tools' 'vboot-utils' 'dtc')
 options=('!strip')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
-        #"http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
-        "http://rcn-ee.com/deb/sid-armhf/v${rcnver}-${rcnrel}/patch-${rcnver%.0}-${rcnrel}.diff.gz"
+        "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
+        "http://rcn-ee.com/deb/stretch-armhf/v${rcnver}-${rcnrel}/patch-${rcnver%.0}-${rcnrel}.diff.xz"
         '0001-ARM-atags-add-support-for-Marvell-s-u-boot.patch'
         '0002-ARM-atags-fdt-retrieve-MAC-addresses-from-Marvell-bo.patch'
         '0003-SMILE-Plug-device-tree-file.patch'
@@ -28,36 +28,49 @@ source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         '0007-exynos4412-odroid-set-higher-minimum-buck2-regulator.patch'
         '0008-ARM-dove-enable-ethernet-on-D3Plug.patch'
         '0009-USB-Armory-MkII-support.patch'
+        '91-01-libata-add-ledtrig-support.patch'
+        '91-02-Enable-ATA-port-LED-trigger.patch'
+        '92-mvebu-gpio-add_wake_on_gpio_support.patch'
+        '92-mvebu-gpio-remove-hardcoded-timer-assignment.patch'
+        '92-mvebu-gpio-remove-hardcoded-timer-assignment-2.patch'
+        '93-helios4-device-tree.patch'
+        '94-helios4-dts-add-wake-on-lan-support.patch'
+        '95-helios4-dts-assign-pinctrl-to-fan.patch'
         'config'
         'linux.preset'
         '60-linux.hook'
-        '90-linux.hook'
-        '92-mvebu-gpio-remove-hardcoded-timer-assignment.patch')
+        '90-linux.hook')
 
-
-md5sums=('ce9b2d974d27408a61c53a30d3f98fb9'
-         '8906e5bfc7fab33d4db3584c3816282e'
-         '8741125da5769dec5e2e677e79921873'
-         'c73bd92dfb373cfe747b37388ab79215'
-         'e25db57fa5c4068a4f488d8e60fcf952'
-         '1d740e2ebda8f1cfe3f7f6ac3ec87d8d'
-         'f33ddfc782a5efbad6a6a1f8e11328ed'
-         'a30ab4aecf7d39a5643f390ccda3c6d3'
-         '5ab56d2bf2422714f82e586d1440a835'
-         '20ce2ab46d910316fe00e70ddfb06130'
-         'b209fbb5ea8c5eecb9afa7b77c450f7f'
-         '38953deeb5f01372bb6b6ed14d8660a9'
+md5sums=('0e5c4c15266218ef26c50fac0016095b'
+         '76f0d7bc98014e70f9d3dd56dca08bd4'
+         '9e7067575c933fd4c9ea64dd05192771'
+         'b27d0901f7518ba184215166839ebef0'
+         'cd91c108378ab798d86eaac43f944205'
+         'a9e65315eee231c03ba91cbdcc20f6af'
+         '1cdaf6715c74dc8f0896755e30e19ace'
+         '4b38cbdcac655da8641026393c55dd9b'
+         '2d2db143bd26d5dcb3abfb845c534248'
+         'd6ab849ab09e24e684e49617ce8199d0'
+         '379ed0e2f315bd188da2c317d843acff'
+         'a4dba3e31ffdebc78a3fa3a22a9b5752'
+         'd72864201d4d62c495ab9b9f750bb389'
+         '779c884ae9854df32e8ced0e86359649'
+         'b338409db059f5a38bc333372223f1cc'
+         'ad242a0723e7c04afdaca24aff06bb33'
+         '454c6a5dd3ab13379ecc1f29e075aa8e'         
+         '7016e71ab2b0f2322373510528440cc3'
+         '5876ccfe05a07b64661556ea4fae4b59'
+         'f99140f514e94a1173bf6a77deb24b9f'
+         '1bfd3af9e0583e626761ff318089a1bc'
          '86d4a35722b5410e3b29fc92dae15d4b'
          'ce6c81ad1ad1f8b333fd6077d47abdaf'
-         '3e2a512f8da5db5fe9f17875405e56a3'
-         'c11b3fd3bcf1fa7e94b3afb574ab4be0')
-
+         '3e2a512f8da5db5fe9f17875405e56a3')
 
 prepare() {
   cd "${srcdir}/${_srcname}"
 
   # add upstream patch
-  #git apply --whitespace=nowarn ../patch-${pkgver}
+  git apply --whitespace=nowarn ../patch-${pkgver}
 
   # RCN patch
   git apply ../patch-${rcnver%.0}-${rcnrel}.diff
@@ -72,8 +85,16 @@ prepare() {
   git apply ../0007-exynos4412-odroid-set-higher-minimum-buck2-regulator.patch
   git apply ../0008-ARM-dove-enable-ethernet-on-D3Plug.patch
   git apply ../0009-USB-Armory-MkII-support.patch
-  patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment.patch
 
+  patch -Np1 < ../91-01-libata-add-ledtrig-support.patch
+  patch -Np1 < ../91-02-Enable-ATA-port-LED-trigger.patch
+  patch -Np1 < ../92-mvebu-gpio-add_wake_on_gpio_support.patch
+  patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment.patch
+  patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment-2.patch
+  rm ./arch/arm/boot/dts/armada-388-helios4.dts
+  patch -Np1 < ../93-helios4-device-tree.patch
+  patch -Np1 < ../94-helios4-dts-add-wake-on-lan-support.patch
+  patch -Np1 < ../95-helios4-dts-assign-pinctrl-to-fan.patch
 
   cat "${srcdir}/config" > ./.config
 
@@ -119,7 +140,7 @@ _package() {
   depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
   optdepends=('crda: to set the correct wireless channels of your country')
   backup=("etc/mkinitcpio.d/${pkgbase}.preset")
-  provides=('kernel26' "linux=${pkgver}")
+  provides=("linux=${pkgver}" "WIREGUARD-MODULE")
   conflicts=('linux')
   replaces=('linux-mvebu' 'linux-udoo' 'linux-sun4i' 'linux-sun5i' 'linux-sun7i' 'linux-usbarmory' 'linux-wandboard' 'linux-clearfog')
   install=${pkgname}.install
