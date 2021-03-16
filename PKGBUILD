@@ -4,13 +4,13 @@
 buildarch=4
 
 pkgbase=linux-helios4
-_srcname=linux-5.8
+_srcname=linux-5.11
 _kernelname=${pkgbase#linux}
 _desc="ARMv7 Helios4"
-pkgver=5.8.9
+pkgver=5.11.2
 pkgrel=1
-rcnver=5.8.5
-rcnrel=armv7-x11
+rcnver=5.11.0
+rcnrel=armv7-x10
 arch=('armv7h')
 url="http://www.kernel.org/"
 license=('GPL2')
@@ -19,6 +19,7 @@ options=('!strip')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
         "http://rcn-ee.com/deb/stretch-armhf/v${rcnver}-${rcnrel}/patch-${rcnver%.0}-${rcnrel}.diff.xz"
+	'0001-cpuidle-mvebu-indicate-failure-to-enter-deeper-sleep.patch'
         '0001-ARM-atags-add-support-for-Marvell-s-u-boot.patch'
         '0002-ARM-atags-fdt-retrieve-MAC-addresses-from-Marvell-bo.patch'
         '0003-SMILE-Plug-device-tree-file.patch'
@@ -32,38 +33,35 @@ source=("http://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         '91-02-Enable-ATA-port-LED-trigger.patch'
         '92-mvebu-gpio-add_wake_on_gpio_support.patch'
         '92-mvebu-gpio-remove-hardcoded-timer-assignment.patch'
-        '92-mvebu-gpio-remove-hardcoded-timer-assignment-2.patch'
-        '93-helios4-device-tree.patch'
         '94-helios4-dts-add-wake-on-lan-support.patch'
-        '95-helios4-dts-assign-pinctrl-to-fan.patch'
+	'95-helios4-dts-assign-pinctrl-to-fan-and-led.patch'
         'config'
         'linux.preset'
         '60-linux.hook'
         '90-linux.hook')
 
-md5sums=('0e5c4c15266218ef26c50fac0016095b'
-         '76f0d7bc98014e70f9d3dd56dca08bd4'
-         '9e7067575c933fd4c9ea64dd05192771'
-         'b27d0901f7518ba184215166839ebef0'
-         'cd91c108378ab798d86eaac43f944205'
-         'a9e65315eee231c03ba91cbdcc20f6af'
-         '1cdaf6715c74dc8f0896755e30e19ace'
-         '4b38cbdcac655da8641026393c55dd9b'
-         '2d2db143bd26d5dcb3abfb845c534248'
-         'd6ab849ab09e24e684e49617ce8199d0'
-         '379ed0e2f315bd188da2c317d843acff'
-         'a4dba3e31ffdebc78a3fa3a22a9b5752'
-         'd72864201d4d62c495ab9b9f750bb389'
-         '779c884ae9854df32e8ced0e86359649'
-         'b338409db059f5a38bc333372223f1cc'
-         'ad242a0723e7c04afdaca24aff06bb33'
-         '454c6a5dd3ab13379ecc1f29e075aa8e'         
-         '7016e71ab2b0f2322373510528440cc3'
-         '5876ccfe05a07b64661556ea4fae4b59'
-         'f99140f514e94a1173bf6a77deb24b9f'
-         '1bfd3af9e0583e626761ff318089a1bc'
-         '86d4a35722b5410e3b29fc92dae15d4b'
-         'ce6c81ad1ad1f8b333fd6077d47abdaf'
+md5sums=('d2985a3f16ef1ea3405c04c406e29dcc'
+         '4f2437097d20455c71d1b1866469d6be'
+         'fe141ac54d974f1082bc1e5399c71447'
+	 'c0094a8b4ab57b87e4c9ae19b4e01c8b'
+	 '6c3c583d8fa165315791216c5dce9fe4'
+	 '0b1fac542a49c8756c4c66d55df7a609'
+	 '5b303c16f3957d0c79285bcddae34218'
+	 '85501c220fbb3c80b5a2836e4764dbe0'
+	 '6e791015c502e6931ca1d27a4dde006a'
+	 'f704f034ac86b058c58ef82499a0cd0e'
+	 'eef2303908ced1604187ae76cdf2b9d0'
+	 '56f2d15c883be64c182073744540a7c6'
+	 '0e76e8e7d3d6c5961cd7276a4df9f3a3'
+	 'c79f1ee10ecaa7716f657a9a00acc824'
+	 '023d3413b6ec627a737cfd43978942f3'
+	 'c636dff65cbf645b882a0f841da6aa8c'
+	 '0ec11d4dd69726d745c18752165ca2d4'
+	 '7acfc37c8e85515f2278cb5747a1fb44'
+	 '3054f4c10af22fd94c5e95690be8d2c5'
+	 'ee805dc47da0fcf34e721c552fd8c528'
+	 '86d4a35722b5410e3b29fc92dae15d4b'
+	 'ce6c81ad1ad1f8b333fd6077d47abdaf'
          '3e2a512f8da5db5fe9f17875405e56a3')
 
 prepare() {
@@ -76,6 +74,7 @@ prepare() {
   git apply ../patch-${rcnver%.0}-${rcnrel}.diff
 
   # ALARM patches
+  git apply ../0001-cpuidle-mvebu-indicate-failure-to-enter-deeper-sleep.patch
   git apply ../0001-ARM-atags-add-support-for-Marvell-s-u-boot.patch
   git apply ../0002-ARM-atags-fdt-retrieve-MAC-addresses-from-Marvell-bo.patch
   git apply ../0003-SMILE-Plug-device-tree-file.patch
@@ -90,11 +89,8 @@ prepare() {
   patch -Np1 < ../91-02-Enable-ATA-port-LED-trigger.patch
   patch -Np1 < ../92-mvebu-gpio-add_wake_on_gpio_support.patch
   patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment.patch
-  patch -Np1 < ../92-mvebu-gpio-remove-hardcoded-timer-assignment-2.patch
-  rm ./arch/arm/boot/dts/armada-388-helios4.dts
-  patch -Np1 < ../93-helios4-device-tree.patch
   patch -Np1 < ../94-helios4-dts-add-wake-on-lan-support.patch
-  patch -Np1 < ../95-helios4-dts-assign-pinctrl-to-fan.patch
+  patch -Np1 < ../95-helios4-dts-assign-pinctrl-to-fan-and-led.patch
 
   cat "${srcdir}/config" > ./.config
 
@@ -208,14 +204,14 @@ _package-headers() {
   cp -t "${_builddir}" -a include scripts
 
   install -Dt "${_builddir}/arch/${KARCH}" -m644 arch/${KARCH}/Makefile
-  install -Dt "${_builddir}/arch/${KARCH}/kernel" -m644 arch/${KARCH}/kernel/asm-offsets.s arch/$KARCH/kernel/module.lds
+  install -Dt "${_builddir}/arch/${KARCH}/kernel" -m644 arch/${KARCH}/kernel/asm-offsets.s
 
   cp -t "${_builddir}/arch/${KARCH}" -a arch/${KARCH}/include
-  for i in dove exynos omap2; do
+  for i in dove omap2; do
     mkdir -p "${_builddir}/arch/${KARCH}/mach-${i}"
     cp -t "${_builddir}/arch/${KARCH}/mach-${i}" -a arch/$KARCH/mach-${i}/include
   done
-  for i in omap orion samsung versatile; do
+  for i in omap orion versatile; do
     mkdir -p "${_builddir}/arch/${KARCH}/plat-${i}"
     cp -t "${_builddir}/arch/${KARCH}/plat-${i}" -a arch/$KARCH/plat-${i}/include
   done
@@ -265,7 +261,6 @@ _package-headers() {
     /usr/bin/strip ${_strip} "${_binary}"
   done < <(find "${_builddir}/scripts" -type f -perm -u+w -print0 2>/dev/null)
 }
-
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 for _p in ${pkgname[@]}; do
   eval "package_${_p}() {
